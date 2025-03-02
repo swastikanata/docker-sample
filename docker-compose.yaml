@@ -1,0 +1,58 @@
+volumes:
+  mongo-data1:
+    name: mongo-data1
+  mongo-data2:
+    name: mongo-data2
+
+networks:
+  example-network:
+    name: example:network
+    driver: bridge
+
+services:
+  nginx-example:
+    container_name: nginx-example
+    image: nginx:latest
+    ports:
+      - protocol: tcp
+        published: 8081
+        target: 80
+    networks:
+      - example-network
+  nginx-example2:
+    container_name: nginx-example2
+    image: nginx:latest
+    ports:
+      - "8082:80"
+    networks:
+      - example-network
+  mongodb-example:
+    container_name: mongodb-example
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: made
+      MONGO_INITDB_ROOT_PASSWORD: made
+      MONGO_INITDB_DATABASE: made
+    volumes:
+      - "mongo-data1:/data/db"
+    networks:
+      - example-network
+  redis-example:
+    container_name: redis-example
+    image: redis:latest
+  mongodb-express-example:
+    image: mongo-express:latest
+    container_name: mongodb-express-example
+    depends_on:
+      - mongodb-example
+    ports:
+      - "8083:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: made
+      ME_CONFIG_MONGODB_ADMINPASSWORD: made
+      ME_CONFIG_MONGODB_SERVER: mongodb-example
+    networks:
+      - example-network
+
